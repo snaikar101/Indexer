@@ -1,6 +1,7 @@
 import os
 import gzip
 import sys
+import time
 
 class Spliter ():
 	
@@ -25,7 +26,7 @@ class Spliter ():
 def main():
 	inv_h = gzip.open("inv_ind.gz","rb")
 	i=0
-	ts=524288000*2/100  #When running for nz
+	ts=62914560  #When running for nz
 	spliter = Spliter(ts,False)
 	c=0
 	temp_ind_lst = []
@@ -51,4 +52,6 @@ def main():
 	print (i+1)			
 		
 if __name__== '__main__':
+	start_time = time.time()
 	main()
+	print (time.time() - start_time)/60, "Minutes"

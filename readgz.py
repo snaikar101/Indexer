@@ -6,6 +6,7 @@ import os
 import sys
 from cStringIO import StringIO
 import urllib2
+import time
 
 class Page:
 	
@@ -17,13 +18,14 @@ class Page:
 class FileReader:
 	
 	def __init__(self,debug_set):
-		self.rootDirectory = "/home/santu/Index/nz2_merged"
+		self.rootDirectory = "/home/santu/Index/nz10/data"
 		self.t_count=0
 		self.page_table={}   #Doc_id url count
 		self.temp_index={}   #Hash of postings
 		self.doc_id=0
-		self.f_html = gzip.open('nz2_merged/0_data', 'rb')
-		self.f_index = gzip.open('nz2_merged/0_index', 'rb')
+		self.f_html =None
+		self.f_index =None
+		self.docavg=0.0
 		if debug_set:
 			self.doc_file= open('doc.txt','w')
 			self.ind_file= open('inv_ind.txt','w')
@@ -34,11 +36,15 @@ class FileReader:
 	#write doc_id url count to file	
 	def writeDoc(self):
 		for k,v in self.page_table.iteritems():
-			self.doc_file.write(str(k)+" "+str(v.url)+" "+str(v.no_words)+"\n")
+			self.docavg=float((((float(k)-1)*float(self.docavg))+float(v.no_words))/float(k))
+			self.doc_file.write(str(k)+" "+str(v.url)+" "+str(v.no_words)+"\n")		
 		
 		for k,v in self.temp_index.iteritems():
 			self.ind_file.write(str(k)+" "+str(v)+"\n")
-			
+		
+		fdoc=open('docmavavg.txt','w')
+		fdoc.write(str(self.doc_id)+' '+str(self.docavg))
+		fdoc.close()	
 			
 	#Find the word in the hash table and appends to postings
 	def addToHash(self,doc_id,tempHash):
@@ -131,4 +137,6 @@ def main():
 	fr.f_index.close()
 	
 if __name__== '__main__':
+	start_time = time.time()
 	main()
+	print (time.time() - start_time)/60, "Minutes"
